@@ -1,0 +1,48 @@
+modules = ["nodejs-20"]
+
+[nix]
+channel = "stable-25_05"
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Project"
+mode = "parallel"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "VSCode Extension Build"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "vscode_extension_build"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Build Extension"
+
+[[workflows.workflow]]
+name = "VSCode Extension Build"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm install && npm run compile"
+
+[[workflows.workflow]]
+name = "vscode_extension_build"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm init -y && npm install @types/vscode @types/ws ws @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint typescript --save-dev && npm install ws && npx tsc --build && echo \"Build completed successfully\""
+
+[[workflows.workflow]]
+name = "Build Extension"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run compile"
