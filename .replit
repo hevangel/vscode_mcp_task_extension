@@ -4,7 +4,7 @@ modules = ["nodejs-20"]
 channel = "stable-25_05"
 
 [workflows]
-runButton = "Project"
+runButton = "VSCode Extension Build"
 
 [[workflows.workflow]]
 name = "Project"
