@@ -4,7 +4,7 @@ modules = ["nodejs-20"]
 channel = "stable-25_05"
 
 [workflows]
-runButton = "VSCode Extension Build"
+runButton = "Project"
 
 [[workflows.workflow]]
 name = "Project"
@@ -22,6 +22,10 @@ args = "vscode_extension_build"
 [[workflows.workflow.tasks]]
 task = "workflow.run"
 args = "Build Extension"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Build VSIX"
 
 [[workflows.workflow]]
 name = "VSCode Extension Build"
@@ -46,3 +50,11 @@ author = "agent"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npm run compile"
+
+[[workflows.workflow]]
+name = "Build VSIX"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run compile && npx vsce package --allow-missing-repository --allow-missing-license"

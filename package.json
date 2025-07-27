@@ -75,6 +75,7 @@
   "license": "ISC",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.17.0",
+    "@vscode/vsce": "^3.6.0",
     "zod": "^3.25.76"
   }
 }

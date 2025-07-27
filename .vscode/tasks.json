@@ -13,6 +13,36 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "compile",
+            "type": "npm",
+            "script": "compile",
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "silent",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            },
+            "problemMatcher": "$tsc"
+        },
+        {
+            "label": "package-vsix",
+            "type": "shell",
+            "command": "npx",
+            "args": ["vsce", "package", "--allow-missing-repository", "--allow-missing-license"],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "dependsOn": "compile",
+            "problemMatcher": []
         }
     ]
 }
