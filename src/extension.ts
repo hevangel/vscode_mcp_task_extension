@@ -45,7 +45,7 @@ export function activate(context: vscode.ExtensionContext) {
     const configChangeListener = vscode.workspace.onDidChangeConfiguration(event => {
         if (event.affectsConfiguration('mcpTaskServer')) {
             logger.info('MCP Task Server configuration changed');
-            if (mcpServer && mcpServer.isRunning()) {
+            if (mcpServer && mcpServer.isServerRunning()) {
                 vscode.window.showInformationMessage(
                     'MCP Task Server configuration changed. Restart the server to apply changes.',
                     'Restart'
@@ -96,7 +96,7 @@ export function deactivate() {
 }
 
 async function startMCPServer(): Promise<void> {
-    if (mcpServer && mcpServer.isRunning()) {
+    if (mcpServer && mcpServer.isServerRunning()) {
         vscode.window.showWarningMessage('MCP Task Server is already running');
         return;
     }
@@ -123,7 +123,7 @@ async function startMCPServer(): Promise<void> {
 }
 
 async function stopMCPServer(): Promise<void> {
-    if (!mcpServer || !mcpServer.isRunning()) {
+    if (!mcpServer || !mcpServer.isServerRunning()) {
         vscode.window.showWarningMessage('MCP Task Server is not running');
         return;
     }
@@ -148,13 +148,11 @@ function getServerConfig(): MCPServerConfig {
 }
 
 function updateStatusBar(statusBarItem: vscode.StatusBarItem): void {
-    const isRunning = mcpServer && mcpServer.isRunning();
-    const config = getServerConfig();
+    const isRunning = mcpServer && mcpServer.isServerRunning();
     
     if (isRunning) {
-        const clientCount = mcpServer!.getClientCount();
-        statusBarItem.text = `$(broadcast) MCP Server: ${config.port} (${clientCount} clients)`;
-        statusBarItem.tooltip = `MCP Task Server running on port ${config.port} with ${clientCount} connected clients. Click to show logs.`;
+        statusBarItem.text = `$(broadcast) MCP Server: stdio (running)`;
+        statusBarItem.tooltip = 'MCP Task Server running with stdio transport. Click to show logs.';
         statusBarItem.backgroundColor = undefined;
     } else {
         statusBarItem.text = `$(debug-disconnect) MCP Server: Stopped`;

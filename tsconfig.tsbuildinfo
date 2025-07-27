@@ -1,1 +1,1 @@
-{"root":["./src/extension.ts","./src/logger.ts","./src/mcpServer.ts","./src/mcpTools.ts","./src/taskProvider.ts","./src/types.ts"],"version":"5.8.3"}
+{"root":["./src/extension.ts","./src/logger.ts","./src/mcpServer.ts","./src/taskProvider.ts","./src/types.ts"],"version":"5.8.3"}

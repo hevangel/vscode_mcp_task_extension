@@ -48,18 +48,18 @@ The extension can be configured through VSCode settings:
 
 ## AI Agent Integration
 
-AI agents can connect to the WebSocket server at `ws://localhost:3000` and use standard MCP protocol to:
+AI agents can connect to the MCP server using stdio transport. The extension provides a standard MCP server that:
 
-1. Initialize connection with the server
-2. List available MCP tools
-3. Execute tools to interact with VSCode tasks
-4. Receive real-time task execution feedback
+1. Uses the official MCP TypeScript SDK
+2. Communicates via stdio protocol (standard input/output)
+3. Exposes VSCode tasks as MCP tools
+4. Provides real-time task execution feedback
 
 ## Architecture
 
 - **Extension Process**: Hosts the MCP server within VSCode
-- **WebSocket Server**: Handles MCP client connections on port 3000
-- **Task Provider**: Interfaces with VSCode task system
+- **MCP Server**: Uses official `@modelcontextprotocol/sdk` with stdio transport
+- **Task Provider**: Interfaces with VSCode's task system
 - **Logger**: Centralized logging with output channel integration
-- **Status Bar**: Shows server status and connected client count
+- **Status Bar**: Shows server status and MCP connection state
 
