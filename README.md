@@ -48,17 +48,17 @@ The extension can be configured through VSCode settings:
 
 ## AI Agent Integration
 
-AI agents can connect to the MCP server using stdio transport. The extension provides a standard MCP server that:
+AI agents can connect to the MCP server using streamable-http transport. The extension provides a standard MCP server that:
 
-1. Uses the official MCP TypeScript SDK
-2. Communicates via stdio protocol (standard input/output)
+1. Uses HTTP-based MCP protocol for robust communication
+2. Runs on configurable port (default: 3000)
 3. Exposes VSCode tasks as MCP tools
 4. Provides real-time task execution feedback
 
 ## Architecture
 
 - **Extension Process**: Hosts the MCP server within VSCode
-- **MCP Server**: Uses official `@modelcontextprotocol/sdk` with stdio transport
+- **MCP Server**: Uses HTTP-based streamable transport for reliable MCP communication
 - **Task Provider**: Interfaces with VSCode's task system
 - **Logger**: Centralized logging with output channel integration
 - **Status Bar**: Shows server status and MCP connection state

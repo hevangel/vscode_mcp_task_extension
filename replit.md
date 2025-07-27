@@ -13,7 +13,7 @@ Preferred communication style: Simple, everyday language.
 ### Frontend Architecture
 - **VSCode Extension**: Built using TypeScript and the VSCode Extension API
 - **Extension Host Process**: The MCP server runs within the VSCode extension process, not as a separate service
-- **MCP Server**: Uses official `@modelcontextprotocol/sdk` with stdio transport for standard MCP communication
+- **MCP Server**: Uses HTTP-based streamable transport for reliable MCP communication
 
 ### Backend Architecture
 - **Embedded MCP Server**: Uses official MCP TypeScript SDK, runs inside the VSCode extension
@@ -23,7 +23,7 @@ Preferred communication style: Simple, everyday language.
 
 ### Key Design Decisions
 1. **Embedded Server Approach**: The MCP server runs within the extension process using official MCP SDK
-2. **Stdio Communication**: Uses standard MCP stdio transport for reliable communication with AI agents
+2. **HTTP Communication**: Uses streamable-http transport for reliable communication with AI agents
 3. **TypeScript**: Chosen for type safety and better IDE support in the VSCode ecosystem
 4. **Event-Driven Architecture**: Leverages VSCode's event system for monitoring task lifecycle
 
@@ -69,7 +69,7 @@ Preferred communication style: Simple, everyday language.
 ## Data Flow
 
 1. **Extension Activation**: VSCode loads the extension and optionally auto-starts the MCP server
-2. **Client Connection**: AI agents connect to the MCP server via stdio transport
+2. **Client Connection**: AI agents connect to the MCP server via HTTP on the configured port
 3. **Tool Discovery**: Clients can request available MCP tools from the server
 4. **Task Operations**: Clients invoke tools to list, execute, or monitor VSCode tasks
 5. **Real-time Updates**: The server provides real-time feedback on task execution status
@@ -113,23 +113,23 @@ Preferred communication style: Simple, everyday language.
   - `autoStart`: Automatically start server on activation
 
 ### Security Considerations
-- MCP server uses stdio transport (standard input/output)
-- No network connections required for basic operation
+- MCP server uses HTTP-based streamable transport
+- Network access required for MCP client connections
 - Task execution has same permissions as VSCode process
 
 ### Runtime Requirements
 - VSCode 1.102.0 or higher
 - Node.js runtime (provided by VSCode)
-- MCP client supporting stdio transport
+- MCP client supporting streamable-http transport
 - Workspace with defined tasks for full functionality
 
 ## Recent Changes
 
 ### July 27, 2025
-✓ Completely rewrote MCP server implementation using official @modelcontextprotocol/sdk
-✓ Replaced WebSocket-based communication with proper stdio transport
-✓ Fixed all TypeScript compilation errors with MCP SDK integration
-✓ Added proper MCP tools using SDK's registerTool() method with zod schemas
-✓ Updated architecture to use standard MCP protocol instead of custom WebSocket
-✓ Successfully compiled extension with proper MCP implementation
-✓ Extension now provides authentic MCP server for AI agent integration
+✓ Implemented streamable-http transport for MCP server as requested
+✓ Created HTTP-based MCP server listening on configurable port (default: 3000)
+✓ Added proper MCP protocol handlers for initialize, tools/list, and tools/call methods
+✓ Implemented all 5 VSCode task tools (list_tasks, execute_task, get_running_tasks, terminate_task, get_task_details)
+✓ Updated status bar to show server port and transport type
+✓ Successfully compiled extension with streamable-http MCP implementation
+✓ Extension now provides HTTP-based MCP server for reliable AI agent integration

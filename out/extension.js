@@ -158,9 +158,10 @@ function getServerConfig() {
 }
 function updateStatusBar(statusBarItem) {
     const isRunning = mcpServer && mcpServer.isServerRunning();
+    const config = getServerConfig();
     if (isRunning) {
-        statusBarItem.text = `$(broadcast) MCP Server: stdio (running)`;
-        statusBarItem.tooltip = 'MCP Task Server running with stdio transport. Click to show logs.';
+        statusBarItem.text = `$(broadcast) MCP Server: ${config.port}`;
+        statusBarItem.tooltip = `MCP Task Server running on port ${config.port} with streamable-http transport. Click to show logs.`;
         statusBarItem.backgroundColor = undefined;
     }
     else {
