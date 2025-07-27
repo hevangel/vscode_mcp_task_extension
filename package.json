@@ -7,7 +7,9 @@
   "engines": {
     "vscode": "^1.102.0"
   },
-  "categories": ["Other"],
+  "categories": [
+    "Other"
+  ],
   "activationEvents": [
     "onStartupFinished"
   ],
@@ -64,10 +66,11 @@
     "@typescript-eslint/eslint-plugin": "^8.38.0",
     "@typescript-eslint/parser": "^8.38.0",
     "eslint": "^9.32.0",
+    "mocha": "^5.2.0",
     "typescript": "^5.8.3",
-    "mocha": "^5.2.0"
-  },
-  "dependencies": {
     "ws": "^8.18.3"
-  }
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
