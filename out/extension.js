@@ -40,6 +40,7 @@ const mcpServer_1 = require("./mcpServer");
 const logger_1 = require("./logger");
 let mcpServer;
 let logger;
+let mcpServerProvider;
 function activate(context) {
     logger = logger_1.Logger.getInstance();
     logger.info('VSCode MCP Task Extension activated');
@@ -82,6 +83,8 @@ function activate(context) {
         }
     });
     context.subscriptions.push(configChangeListener);
+    // Register MCP Server with VSCode
+    registerMCPServerWithVSCode(context);
     // Register status bar item
     const statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
     statusBarItem.command = 'mcpTaskServer.showLogs';
@@ -107,6 +110,9 @@ function deactivate() {
             });
         });
     }
+    if (mcpServerProvider) {
+        mcpServerProvider.dispose();
+    }
     if (logger) {
         logger.dispose();
     }
@@ -120,6 +126,8 @@ async function startMCPServer() {
         const config = getServerConfig();
         mcpServer = new mcpServer_1.MCPServer(config);
         await mcpServer.start();
+        // Refresh MCP server registration after starting
+        refreshMCPServerRegistration();
         logger.info('MCP Task Server started successfully');
         vscode.window.showInformationMessage(`MCP Task Server started on port ${config.port}`, 'Show Logs').then(selection => {
             if (selection === 'Show Logs') {
@@ -140,6 +148,8 @@ async function stopMCPServer() {
     }
     try {
         await mcpServer.stop();
+        // Refresh MCP server registration after stopping
+        refreshMCPServerRegistration();
         logger.info('MCP Task Server stopped successfully');
     }
     catch (error) {
@@ -155,6 +165,57 @@ function getServerConfig() {
         enableLogging: config.get('enableLogging', true),
         autoStart: config.get('autoStart', true)
     };
+}
+function registerMCPServerWithVSCode(context) {
+    try {
+        // Check if the language model API supports MCP server registration
+        if ('lm' in vscode && 'registerMcpServerDefinitionProvider' in vscode.lm) {
+            const provider = vscode.lm.registerMcpServerDefinitionProvider('mcpTaskServerProvider', {
+                async provideMcpServerDefinitions() {
+                    const config = getServerConfig();
+                    const isServerRunning = mcpServer && mcpServer.isServerRunning();
+                    if (!isServerRunning) {
+                        return [];
+                    }
+                    return [{
+                            id: 'vscode-task-mcp-server',
+                            name: 'VSCode Task MCP Server',
+                            type: 'http',
+                            url: `http://localhost:${config.port}/mcp`,
+                            description: 'Provides access to VSCode tasks through MCP protocol'
+                        }];
+                }
+            });
+            mcpServerProvider = provider;
+            context.subscriptions.push(provider);
+            logger.info('MCP Server registered with VSCode language model API');
+        }
+        else {
+            logger.info('VSCode language model MCP registration API not available');
+        }
+    }
+    catch (error) {
+        logger.warn('Failed to register MCP server with VSCode', {
+            error: error instanceof Error ? error.message : error
+        });
+    }
+}
+function refreshMCPServerRegistration() {
+    try {
+        // Check if there's an API to refresh MCP server registrations
+        if ('lm' in vscode && 'refreshMcpServers' in vscode.lm) {
+            vscode.lm.refreshMcpServers();
+            logger.info('MCP Server registration refreshed');
+        }
+        else {
+            logger.debug('MCP server refresh API not available');
+        }
+    }
+    catch (error) {
+        logger.warn('Failed to refresh MCP server registration', {
+            error: error instanceof Error ? error.message : error
+        });
+    }
 }
 function updateStatusBar(statusBarItem) {
     const isRunning = mcpServer && mcpServer.isServerRunning();

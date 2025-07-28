@@ -33,7 +33,7 @@
             "label": "package-vsix",
             "type": "shell",
             "command": "npx",
-            "args": ["vsce", "package", "--allow-missing-repository", "--allow-missing-license"],
+            "args": ["vsce", "package", "--allow-missing-repository"],
             "group": "build",
             "presentation": {
                 "echo": true,

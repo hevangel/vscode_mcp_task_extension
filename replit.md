@@ -125,6 +125,14 @@ Preferred communication style: Simple, everyday language.
 
 ## Recent Changes
 
+### July 28, 2025
+✓ Added MCP server registration with VSCode extension API
+✓ Implemented registerMCPServerWithVSCode function using vscode.lm.registerMcpServerDefinitionProvider
+✓ Added dynamic server registration that activates when MCP server starts
+✓ Fixed VSIX build task to use correct vsce package flags
+✓ Added refreshMCPServerRegistration function for state updates
+✓ Extension now registers itself with VSCode's language model for agent mode integration
+
 ### July 27, 2025
 ✓ Implemented streamable-http transport for MCP server as requested
 ✓ Created HTTP-based MCP server listening on configurable port (default: 3000)

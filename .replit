@@ -57,4 +57,4 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npm run compile && npx vsce package --allow-missing-repository --allow-missing-license"
+args = "npm run compile && npx vsce package --allow-missing-repository"

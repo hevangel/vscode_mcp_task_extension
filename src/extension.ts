@@ -5,6 +5,7 @@ import { MCPServerConfig } from './types';
 
 let mcpServer: MCPServer | undefined;
 let logger: Logger;
+let mcpServerProvider: vscode.Disposable | undefined;
 
 export function activate(context: vscode.ExtensionContext) {
     logger = Logger.getInstance();
@@ -60,6 +61,9 @@ export function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(configChangeListener);
 
+    // Register MCP Server with VSCode
+    registerMCPServerWithVSCode(context);
+
     // Register status bar item
     const statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 100);
     statusBarItem.command = 'mcpTaskServer.showLogs';
@@ -90,6 +94,10 @@ export function deactivate() {
         });
     }
 
+    if (mcpServerProvider) {
+        mcpServerProvider.dispose();
+    }
+
     if (logger) {
         logger.dispose();
     }
@@ -105,6 +113,9 @@ async function startMCPServer(): Promise<void> {
         const config = getServerConfig();
         mcpServer = new MCPServer(config);
         await mcpServer.start();
+        
+        // Refresh MCP server registration after starting
+        refreshMCPServerRegistration();
         
         logger.info('MCP Task Server started successfully');
         vscode.window.showInformationMessage(
@@ -130,6 +141,10 @@ async function stopMCPServer(): Promise<void> {
 
     try {
         await mcpServer.stop();
+        
+        // Refresh MCP server registration after stopping
+        refreshMCPServerRegistration();
+        
         logger.info('MCP Task Server stopped successfully');
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -145,6 +160,61 @@ function getServerConfig(): MCPServerConfig {
         enableLogging: config.get<boolean>('enableLogging', true),
         autoStart: config.get<boolean>('autoStart', true)
     };
+}
+
+function registerMCPServerWithVSCode(context: vscode.ExtensionContext): void {
+    try {
+        // Check if the language model API supports MCP server registration
+        if ('lm' in vscode && 'registerMcpServerDefinitionProvider' in vscode.lm) {
+            const provider = (vscode.lm as any).registerMcpServerDefinitionProvider(
+                'mcpTaskServerProvider',
+                {
+                    async provideMcpServerDefinitions(): Promise<any[]> {
+                        const config = getServerConfig();
+                        const isServerRunning = mcpServer && mcpServer.isServerRunning();
+                        
+                        if (!isServerRunning) {
+                            return [];
+                        }
+
+                        return [{
+                            id: 'vscode-task-mcp-server',
+                            name: 'VSCode Task MCP Server',
+                            type: 'http',
+                            url: `http://localhost:${config.port}/mcp`,
+                            description: 'Provides access to VSCode tasks through MCP protocol'
+                        }];
+                    }
+                }
+            );
+            
+            mcpServerProvider = provider;
+            context.subscriptions.push(provider);
+            logger.info('MCP Server registered with VSCode language model API');
+        } else {
+            logger.info('VSCode language model MCP registration API not available');
+        }
+    } catch (error) {
+        logger.warn('Failed to register MCP server with VSCode', { 
+            error: error instanceof Error ? error.message : error 
+        });
+    }
+}
+
+function refreshMCPServerRegistration(): void {
+    try {
+        // Check if there's an API to refresh MCP server registrations
+        if ('lm' in vscode && 'refreshMcpServers' in vscode.lm) {
+            (vscode.lm as any).refreshMcpServers();
+            logger.info('MCP Server registration refreshed');
+        } else {
+            logger.debug('MCP server refresh API not available');
+        }
+    } catch (error) {
+        logger.warn('Failed to refresh MCP server registration', {
+            error: error instanceof Error ? error.message : error
+        });
+    }
 }
 
 function updateStatusBar(statusBarItem: vscode.StatusBarItem): void {
